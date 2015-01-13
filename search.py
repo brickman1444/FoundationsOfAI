@@ -1,10 +1,9 @@
 
-
+import copy
 
 class boardState:
 
-	#numerals = [[0,1,2],[3,4,5],[6,7,8]]
-
+	'''initialize the numerals member variable as a 2D array representing the board state'''
 	def __init__(self, numeralString):
 		self.numerals = [[0,1,2],[3,4,5],[6,7,8]]
 	
@@ -43,10 +42,32 @@ class boardState:
 				if (int(self.numerals[row][column]) != int(other.numerals[row][column])):
 					return False
 		return True
+		
+	'''Return the state reached by moving a piece up into the blank'''
+	def up(self):
+		upState = copy.deepcopy(self)
+		
+		blankRow = -1
+		blankColumn = -1
+		
+		for row in range(3):
+			for column in range(3):
+				if (upState.numerals[row][column] == 0):
+					blankRow = row
+					blankColumn = column
+					break
+		
+		if (blankRow == 2):
+			return None
+			
+		upState.numerals[blankRow][blankColumn] = upState.numerals[blankRow + 1][blankColumn]
+		upState.numerals[blankRow + 1][blankColumn] = 0
+		
+		return upState
+		
 
 #board = boardState(input("Input a numeral list\n"))
-board1 = boardState("1 2 3 4 5 6 7 8 0")
-board2 = boardState("1 2 3 4 5 6 7 8 0")
+board1 = boardState("1 2 3 0 5 6 7 8 4")
 print(board1)
-print(board2)
-print(board1 == board2)
+print(board1.up())
+print(board1)
