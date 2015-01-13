@@ -6,6 +6,8 @@ class boardState:
 	'''initialize the numerals member variable as a 2D array representing the board state'''
 	def __init__(self, numeralString):
 		self.numerals = [[0,1,2],[3,4,5],[6,7,8]]
+		self.blankRow = -1
+		self.blankColumn = -1
 	
 		numeralList = numeralString.split(" ")
 		
@@ -18,7 +20,9 @@ class boardState:
 			row = index // 3 # integer part of division
 			#print(index, row, column)
 			self.numerals[row][column] = int(numeralList[index])
-		
+			if (int(numeralList[index]) ==0):
+				self.blankRow = row
+				self.blankColumn = column
 		
 	def __str__(self):
 	
@@ -43,25 +47,18 @@ class boardState:
 					return False
 		return True
 		
+	#def __deepcopy__(self):
+		
+		
 	'''Return the state reached by moving a piece up into the blank'''
 	def up(self):
 		upState = copy.deepcopy(self)
 		
-		blankRow = -1
-		blankColumn = -1
-		
-		for row in range(3):
-			for column in range(3):
-				if (upState.numerals[row][column] == 0):
-					blankRow = row
-					blankColumn = column
-					break
-		
-		if (blankRow == 2):
+		if (upState.blankRow == 2):
 			return None
 			
-		upState.numerals[blankRow][blankColumn] = upState.numerals[blankRow + 1][blankColumn]
-		upState.numerals[blankRow + 1][blankColumn] = 0
+		upState.numerals[upState.blankRow][upState.blankColumn] = upState.numerals[upState.blankRow + 1][upState.blankColumn]
+		upState.numerals[upState.blankRow + 1][upState.blankColumn] = 0
 		
 		return upState
 		
