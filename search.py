@@ -35,10 +35,12 @@ class boardState:
 				else:
 					numeralList.append(" ")
 		
-		retString = '''-------\n|{0}|{1}|{2}|\n-------\n|{3}|{4}|{5}|\n-------\n|{6}|{7}|{8}|\n-------'''.format(*numeralList)
+		retString = "-------\n|{0}|{1}|{2}|\n-------\n|{3}|{4}|{5}|\n-------\n|{6}|{7}|{8}|\n-------".format(*numeralList)
+		retString += "Blank row: {0}, Blank col: {1}".format(self.blankRow, self.blankColumn)
 		return retString
 		
 	def __eq__(self, other):
+
 		print(self.numerals)
 		print(other.numerals)
 		for row in range(3):
@@ -47,10 +49,7 @@ class boardState:
 					return False
 		return True
 		
-	#def __deepcopy__(self):
-		
-		
-	'''Return the state reached by moving a piece up into the blank'''
+	#Return the state reached by moving a piece up into the blank
 	def up(self):
 		upState = copy.deepcopy(self)
 		
@@ -59,12 +58,71 @@ class boardState:
 			
 		upState.numerals[upState.blankRow][upState.blankColumn] = upState.numerals[upState.blankRow + 1][upState.blankColumn]
 		upState.numerals[upState.blankRow + 1][upState.blankColumn] = 0
+
+		upState.blankRow += 1
 		
 		return upState
+
+	#Return the state reached by moving a piece down into the blank
+	def down(self):
+		downState = copy.deepcopy(self)
+		
+		if (downState.blankRow == 0):
+			return None
+			
+		downState.numerals[downState.blankRow][downState.blankColumn] = downState.numerals[downState.blankRow - 1][downState.blankColumn]
+		downState.numerals[downState.blankRow - 1][downState.blankColumn] = 0
+
+		downState.blankRow -= 1
+		
+		return downState
+
+	#Return the state reached by moving a piece right into the blank
+	def right(self):
+		rightState = copy.deepcopy(self)
+		
+		if (rightState.blankColumn == 0):
+			return None
+			
+		rightState.numerals[rightState.blankRow][rightState.blankColumn] = rightState.numerals[rightState.blankRow][rightState.blankColumn - 1]
+		rightState.numerals[rightState.blankRow][rightState.blankColumn - 1] = 0
+
+		rightState.blankColumn -= 1
+		
+		return rightState
+
+	#Return the state reached by moving a piece left into the blank
+	def left(self):
+		leftState = copy.deepcopy(self)
+		
+		if (leftState.blankColumn == 2):
+			return None
+			
+		leftState.numerals[leftState.blankRow][leftState.blankColumn] = leftState.numerals[leftState.blankRow][leftState.blankColumn + 1]
+		leftState.numerals[leftState.blankRow][leftState.blankColumn + 1] = 0
+
+		leftState.blankColumn += 1
+		
+		return leftState
+
+	def successor(self):
+		list = []
+
+		state = self.up();
+		if (state is not None): list.append(state)
+		state = self.down();
+		if (state is not None): list.append(state)
+		state = self.right();
+		if (state is not None): list.append(state)
+		state = self.left();
+		if (state is not None): list.append(state)
+
+		return list
 		
 
 #board = boardState(input("Input a numeral list\n"))
 board1 = boardState("1 2 3 0 5 6 7 8 4")
 print(board1)
-print(board1.up())
-print(board1)
+
+for state in board1.successor():
+	print(state)
