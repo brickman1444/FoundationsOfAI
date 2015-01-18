@@ -1,5 +1,8 @@
 
 import copy
+from enum import Enum
+
+Action = Enum("UP","DOWN","LEFT","RIGHT")
 
 class boardState:
 
@@ -120,9 +123,35 @@ class boardState:
 		return list
 		
 
-#board = boardState(input("Input a numeral list\n"))
-board1 = boardState("1 2 3 0 5 6 7 8 4")
-print(board1)
+class node:
+	parent = None
+	children = []
+	data = None
 
-for state in board1.successor():
-	print(state)
+	def __init__(self, _parent, _data):
+		self.parent = _parent
+		self.data = _data
+
+		if self.parent is not None:
+			self.parent.children.append(self)
+
+	def __str__(self):
+		return "Node:\n" + str(self.data)
+
+	def successor(self):
+		retList = []
+		for successorData in self.data.successor():
+			retList.append(node(self, successorData))
+
+		return retList
+
+
+
+#board = boardState(input("Input a numeral list\n"))
+board1 = boardState("1 2 3 4 0 5 6 7 8")
+
+rootNode = node(None, board1)
+
+print(rootNode)
+for n in rootNode.successor():
+	print(n)
