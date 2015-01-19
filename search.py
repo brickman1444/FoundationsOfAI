@@ -2,14 +2,25 @@
 import copy
 from enum import Enum
 from collections import deque
+import time
 
-#Action = Enum("UP","DOWN","LEFT","RIGHT")
+class Actions(Enum):
+	UP = 1
+	DOWN = 2
+	LEFT = 3
+	RIGHT = 4
+
+	def ActionStr(action):
+		if (action == Actions.UP): return "UP"
+		if (action == Actions.DOWN): return "DOWN"
+		if (action == Actions.LEFT): return "LEFT"
+		if (action == Actions.RIGHT): return "RIGHT"
 
 class boardState:
 
 	'''initialize the numerals member variable as a 2D array representing the board state'''
 	def __init__(self, numeralString):
-		self.numerals = [[0,1,2],[3,4,5],[6,7,8]]
+		self.numerals = [[0,1,2],[3,4,5],[6,7,8]] # temp data
 		self.blankRow = -1
 		self.blankColumn = -1
 	
@@ -131,21 +142,32 @@ class node:
 	parent = None
 	children = []
 	data = None
+	depth = 0
+	action = None
 
-	def __init__(self, _parent, _data):
+	def __init__(self, _parent, _data, _action):
 		self.parent = _parent
 		self.data = _data
+		self.action = _action
 
 		if self.parent is not None:
 			self.parent.children.append(self)
+			self.depth = self.parent.depth + 1
 
 	def __str__(self):
 		return "Node:\n" + str(self.data)
 
 	def successor(self):
 		retList = []
-		for successorData in self.data.successor():
-			retList.append(node(self, successorData))
+
+		successorData = self.data.up()
+		if (successorData is not None):	retList.append(node(self, successorData, Actions.UP))
+		successorData = self.data.down()
+		if (successorData is not None):	retList.append(node(self, successorData, Actions.DOWN))
+		successorData = self.data.left()
+		if (successorData is not None):	retList.append(node(self, successorData, Actions.LEFT))
+		successorData = self.data.right()
+		if (successorData is not None):	retList.append(node(self, successorData, Actions.RIGHT))
 
 		return retList
 
@@ -159,14 +181,17 @@ class node:
 #board = boardState(input("Input a numeral list\n"))
 goalState = boardState("1 2 3 8 0 4 7 6 5")
 
-initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
+#initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
 #initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
-#initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
+initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
-rootNode = node(None, initialState)
+rootNode = node(None, initialState, None)
 
 nodeList = deque([rootNode])
 nodeSet = set([rootNode])
+
+print(initialState)
+startTime = time.time()
 
 while True:
 
@@ -176,13 +201,22 @@ while True:
 	if (currNode.data == goalState):
 		print("solution found")
 
-		i = 0
+		endTime = time.time()
+
+		solutionList = []
 
 		while (currNode is not None):
-			print(i)
-			i += 1
-			print(currNode)
+			solutionList.append(currNode)
 			currNode = currNode.parent
+
+		solutionList.reverse()
+
+		for solutionNode in solutionList:
+			#print(solutionNode)
+			if solutionNode.action is not None:
+				print(Actions.ActionStr(solutionNode.action))
+
+		print("Total time = {0}".format(endTime - startTime))
 
 		break
 
@@ -191,8 +225,8 @@ while True:
 	for successorNode in successors:
 
 		if successorNode not in nodeSet:
-			nodeList.appendleft(successorNode) # depth first
-			#nodeList.append(successorNode) # breadth first
+			#nodeList.appendleft(successorNode) # depth first
+			nodeList.append(successorNode) # breadth first
 			nodeSet.add(successorNode)
 
-	print(len(nodeSet))
+	#print(len(nodeSet))
