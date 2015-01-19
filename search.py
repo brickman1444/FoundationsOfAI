@@ -191,7 +191,8 @@ while True:
 	for successorNode in successors:
 
 		if successorNode not in nodeSet:
-			nodeList.append(successorNode)
+			nodeList.appendleft(successorNode) # depth first
+			#nodeList.append(successorNode) # breadth first
 			nodeSet.add(successorNode)
 
 	print(len(nodeSet))
