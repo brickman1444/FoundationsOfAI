@@ -52,6 +52,9 @@ class boardState:
 				if (int(self.numerals[row][column]) != int(other.numerals[row][column])):
 					return False
 		return True
+
+	def __hash__(self):
+		return hash(str(self.numerals))
 		
 	#Return the state reached by moving a piece up into the blank
 	def up(self):
@@ -149,17 +152,21 @@ class node:
 	def __eq__(self, other):
 		return self.data == other.data
 
+	def __hash__(self):
+		return hash(self.data)
+
 
 #board = boardState(input("Input a numeral list\n"))
 goalState = boardState("1 2 3 8 0 4 7 6 5")
 
-#initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
-initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
+initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
+#initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
+#initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
 rootNode = node(None, initialState)
 
-
 nodeList = deque([rootNode])
+nodeSet = set([rootNode])
 
 while True:
 
@@ -183,14 +190,8 @@ while True:
 
 	for successorNode in successors:
 
-		contained = False
-
-		for storedNode in nodeList:
-			if (successorNode == storedNode):
-				contained = True
-				break
-
-		if (not contained):
+		if successorNode not in nodeSet:
 			nodeList.append(successorNode)
+			nodeSet.add(successorNode)
 
-	print(len(nodeList))
+	print(len(nodeSet))
