@@ -1,8 +1,9 @@
 
 import copy
 from enum import Enum
+from collections import deque
 
-Action = Enum("UP","DOWN","LEFT","RIGHT")
+#Action = Enum("UP","DOWN","LEFT","RIGHT")
 
 class boardState:
 
@@ -39,13 +40,13 @@ class boardState:
 					numeralList.append(" ")
 		
 		retString = "-------\n|{0}|{1}|{2}|\n-------\n|{3}|{4}|{5}|\n-------\n|{6}|{7}|{8}|\n-------".format(*numeralList)
-		retString += "Blank row: {0}, Blank col: {1}".format(self.blankRow, self.blankColumn)
+		#retString += "Blank row: {0}, Blank col: {1}".format(self.blankRow, self.blankColumn)
 		return retString
 		
 	def __eq__(self, other):
 
-		print(self.numerals)
-		print(other.numerals)
+		#print(self.numerals)
+		#print(other.numerals)
 		for row in range(3):
 			for column in range(3):
 				if (int(self.numerals[row][column]) != int(other.numerals[row][column])):
@@ -145,13 +146,51 @@ class node:
 
 		return retList
 
+	def __eq__(self, other):
+		return self.data == other.data
 
 
 #board = boardState(input("Input a numeral list\n"))
-board1 = boardState("1 2 3 4 0 5 6 7 8")
+goalState = boardState("1 2 3 8 0 4 7 6 5")
 
-rootNode = node(None, board1)
+#initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
+initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
-print(rootNode)
-for n in rootNode.successor():
-	print(n)
+rootNode = node(None, initialState)
+
+
+nodeList = deque([rootNode])
+
+while True:
+
+	# pops off the first item 
+	currNode = nodeList.popleft()
+
+	if (currNode.data == goalState):
+		print("solution found")
+
+		i = 0
+
+		while (currNode is not None):
+			print(i)
+			i += 1
+			print(currNode)
+			currNode = currNode.parent
+
+		break
+
+	successors = currNode.successor()
+
+	for successorNode in successors:
+
+		contained = False
+
+		for storedNode in nodeList:
+			if (successorNode == storedNode):
+				contained = True
+				break
+
+		if (not contained):
+			nodeList.append(successorNode)
+
+	print(len(nodeList))
