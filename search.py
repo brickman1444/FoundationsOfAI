@@ -177,13 +177,28 @@ class node:
 	def __hash__(self):
 		return hash(self.data)
 
-
-#board = boardState(input("Input a numeral list\n"))
 goalState = boardState("1 2 3 8 0 4 7 6 5")
 
-#initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
+def h1(board1):
+
+	diffCount = 0
+
+	for row in range(3):
+		for col in range(3):
+			if (board1.numerals[row][col] != goalState.numerals[row][col]):
+				diffCount += 1
+
+	return diffCount
+
+def h1Node(node):
+	return h1(node.data)
+
+#board = boardState(input("Input a numeral list\n"))
+
+
+initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
 #initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
-initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
+#initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
 rootNode = node(None, initialState, None)
 
@@ -216,7 +231,7 @@ while True:
 			if solutionNode.action is not None:
 				print(Actions.ActionStr(solutionNode.action))
 
-		print("Total time = {0}".format(endTime - startTime))
+		print("Total time = {0} Solution length = {1}".format(endTime - startTime, len(solutionList)))
 
 		break
 
