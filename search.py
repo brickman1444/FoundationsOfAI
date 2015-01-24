@@ -196,9 +196,9 @@ def h1Node(node):
 #board = boardState(input("Input a numeral list\n"))
 
 
-initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
+#initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
 #initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
-#initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
+initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
 rootNode = node(None, initialState, None)
 
@@ -241,7 +241,11 @@ while True:
 
 		if successorNode not in nodeSet:
 			#nodeList.appendleft(successorNode) # depth first
-			nodeList.append(successorNode) # breadth first
+			#nodeList.append(successorNode) # breadth first
+
+			nodeList.append(successorNode) # greedy best first
+			nodeList = deque(sorted(list(nodeList), key = h1Node))
+			
 			nodeSet.add(successorNode)
 
 	#print(len(nodeSet))
