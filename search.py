@@ -67,61 +67,61 @@ class boardState:
 	def __hash__(self):
 		return hash(str(self.numerals))
 		
-	#Return the state reached by moving a piece up into the blank
-	def up(self):
-		upState = copy.deepcopy(self)
-		
-		if (upState.blankRow == 2):
-			return None
-			
-		upState.numerals[upState.blankRow][upState.blankColumn] = upState.numerals[upState.blankRow + 1][upState.blankColumn]
-		upState.numerals[upState.blankRow + 1][upState.blankColumn] = 0
-
-		upState.blankRow += 1
-		
-		return upState
-
-	#Return the state reached by moving a piece down into the blank
+	#Return the state reached by moving the blank down
 	def down(self):
 		downState = copy.deepcopy(self)
 		
-		if (downState.blankRow == 0):
+		if (downState.blankRow == 2):
 			return None
 			
-		downState.numerals[downState.blankRow][downState.blankColumn] = downState.numerals[downState.blankRow - 1][downState.blankColumn]
-		downState.numerals[downState.blankRow - 1][downState.blankColumn] = 0
+		downState.numerals[downState.blankRow][downState.blankColumn] = downState.numerals[downState.blankRow + 1][downState.blankColumn]
+		downState.numerals[downState.blankRow + 1][downState.blankColumn] = 0
 
-		downState.blankRow -= 1
+		downState.blankRow += 1
 		
 		return downState
 
-	#Return the state reached by moving a piece right into the blank
-	def right(self):
-		rightState = copy.deepcopy(self)
+	#Return the state reached by moving the blank up
+	def up(self):
+		upState = copy.deepcopy(self)
 		
-		if (rightState.blankColumn == 0):
+		if (upState.blankRow == 0):
 			return None
 			
-		rightState.numerals[rightState.blankRow][rightState.blankColumn] = rightState.numerals[rightState.blankRow][rightState.blankColumn - 1]
-		rightState.numerals[rightState.blankRow][rightState.blankColumn - 1] = 0
+		upState.numerals[upState.blankRow][upState.blankColumn] = upState.numerals[upState.blankRow - 1][upState.blankColumn]
+		upState.numerals[upState.blankRow - 1][upState.blankColumn] = 0
 
-		rightState.blankColumn -= 1
+		upState.blankRow -= 1
 		
-		return rightState
+		return upState
 
-	#Return the state reached by moving a piece left into the blank
+	#Return the state reached by moving the blank left
 	def left(self):
 		leftState = copy.deepcopy(self)
 		
-		if (leftState.blankColumn == 2):
+		if (leftState.blankColumn == 0):
 			return None
 			
-		leftState.numerals[leftState.blankRow][leftState.blankColumn] = leftState.numerals[leftState.blankRow][leftState.blankColumn + 1]
-		leftState.numerals[leftState.blankRow][leftState.blankColumn + 1] = 0
+		leftState.numerals[leftState.blankRow][leftState.blankColumn] = leftState.numerals[leftState.blankRow][leftState.blankColumn - 1]
+		leftState.numerals[leftState.blankRow][leftState.blankColumn - 1] = 0
 
-		leftState.blankColumn += 1
+		leftState.blankColumn -= 1
 		
 		return leftState
+
+	#Return the state reached by moving the blank right
+	def right(self):
+		rightState = copy.deepcopy(self)
+		
+		if (rightState.blankColumn == 2):
+			return None
+			
+		rightState.numerals[rightState.blankRow][rightState.blankColumn] = rightState.numerals[rightState.blankRow][rightState.blankColumn + 1]
+		rightState.numerals[rightState.blankRow][rightState.blankColumn + 1] = 0
+
+		rightState.blankColumn += 1
+		
+		return rightState
 
 	def successor(self):
 		list = []
@@ -199,8 +199,8 @@ def f(node):
 
 #board = boardState(input("Input a numeral list\n"))
 
-#initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
-initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
+initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
+#initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
 #initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
 rootNode = node(None, initialState, None)
@@ -249,15 +249,15 @@ while True:
 
 		if successorNode not in nodeSet: # check for duplicates
 
-			#nodeList.appendleft(successorNode) # depth first. Pushes onto the front
+			nodeList.appendleft(successorNode) # depth first. Pushes onto the front
 
 			#nodeList.append(successorNode) # breadth first. Pushes onto the back
 
 			#nodeList.append(successorNode) # greedy best first
 			#nodeList = deque(sorted(list(nodeList), key = h1)) # sort by the h1() function
 			
-			nodeList.append(successorNode) # A*
-			nodeList = deque(sorted(list(nodeList), key = f)) # sort by the f() function
+			#nodeList.append(successorNode) # A*
+			#nodeList = deque(sorted(list(nodeList), key = f)) # sort by the f() function
 
 			nodeSet.add(successorNode) # Add to the set to check for duplicates
 
