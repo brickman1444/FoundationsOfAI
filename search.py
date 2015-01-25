@@ -222,8 +222,7 @@ class search:
 			#nodeList.append(nodeToAdd) # greedy best first
 			#nodeList = deque(sorted(list(nodeList), key = h1)) # sort by the h1() function
 		
-			self.nodeList.append(nodeToAdd) # A*
-			self.nodeList = deque(sorted(list(self.nodeList), key = f)) # sort by the f() function
+			self.addNodeToListPolyMorph(nodeToAdd)
 
 			self.nodeSet.add(nodeToAdd) # Add to the set to check for duplicates
 
@@ -231,6 +230,11 @@ class search:
 
 			if (currListLength > self.maxListLength):
 				self.maxListLength = currListLength
+
+	def addNodeToListPolyMorph(self, nodeToAdd):
+		
+		self.nodeList.append(nodeToAdd) # A*
+		self.nodeList = deque(sorted(list(self.nodeList), key = f)) # sort by the f() function
 
 	def saveSolution(self, currNode):
 		print("Solution Found!")
@@ -271,6 +275,12 @@ class search:
 
 		print("Total time = {0} Solution length = {1} Max List Length: {2}".format(self.totalTime, self.solutionLength, self.maxListLength))
 
+class greedyBestSearch(search):
+
+	def addNodeToListPolyMorph(self, nodeToAdd):
+
+		self.nodeList.append(nodeToAdd) # greedy best first
+		self.nodeList = deque(sorted(list(self.nodeList), key = h1)) # sort by the h1() function
 
 goalState = boardState("1 2 3 8 0 4 7 6 5")
 
@@ -300,6 +310,6 @@ initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
 #initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
 #initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
-searchObj = search(initialState)
+searchObj = greedyBestSearch(initialState)
 searchObj.findSolution()
 searchObj.printSolution()
