@@ -175,6 +175,103 @@ class node:
 	def __hash__(self):
 		return hash(self.data)
 
+class search:
+
+	def __init__(self, initialState):
+		self.initialState = initialState
+		self.solutionList = None
+		self.totalTime = 0
+		self.maxListLength = 0
+		self.solutionLength = 0
+		self.nodeList = None
+		self.nodeSet = None
+		self.startTime = 0
+
+	def findSolution(self):
+
+		rootNode = node(None, initialState, None)
+
+		self.nodeList = deque([rootNode])
+		self.nodeSet = set([rootNode])
+
+		self.startTime = time.time()
+
+		while True:
+
+			# pops off the first item
+			currNode = self.nodeList.popleft()
+
+			if (currNode.data == goalState):
+				self.saveSolution(currNode)
+				return
+
+			for successorNode in currNode.successor():
+				self.addNodeToList(successorNode)
+				
+		# Control should only flow here if every node has been evaluated and no solution is found
+		self.solutionList = None
+
+	def addNodeToList(self, nodeToAdd):
+
+		if nodeToAdd not in self.nodeSet: # check for duplicates
+
+			#nodeList.appendleft(nodeToAdd) # depth first.  Pushes onto the front
+
+			#nodeList.append(nodeToAdd) # breadth first.  Pushes onto the back
+
+			#nodeList.append(nodeToAdd) # greedy best first
+			#nodeList = deque(sorted(list(nodeList), key = h1)) # sort by the h1() function
+		
+			self.nodeList.append(nodeToAdd) # A*
+			self.nodeList = deque(sorted(list(self.nodeList), key = f)) # sort by the f() function
+
+			self.nodeSet.add(nodeToAdd) # Add to the set to check for duplicates
+
+			currListLength = len(self.nodeList)
+
+			if (currListLength > self.maxListLength):
+				self.maxListLength = currListLength
+
+	def saveSolution(self, currNode):
+		print("Solution Found!")
+
+		endTime = time.time()
+
+		# Walk up the tree to get the solution steps
+
+		self.solutionList = []
+
+		while (currNode is not None):
+			if (currNode.action is not None):
+				self.solutionList.append(currNode)
+			currNode = currNode.parent
+
+		# Reverse the list so the solution is output correctly
+
+		self.solutionList.reverse()
+
+		# Store everything to be printed
+		self.totalTime = endTime - self.startTime
+		self.solutionLength = len(self.solutionList)
+
+	def printSolution(self):
+
+		if (self.solutionList is None):
+			return
+
+		print("Initial State:")
+		print(self.initialState)
+		print("") # blank line
+
+		# Print the solution
+
+		for solutionNode in self.solutionList:
+			#print(solutionNode)
+			print(Actions.ActionStr(solutionNode.action))
+
+		print("Total time = {0} Solution length = {1} Max List Length: {2}".format(self.totalTime, self.solutionLength, self.maxListLength))
+
+
 goalState = boardState("1 2 3 8 0 4 7 6 5")
 
 # Heuristic 1. Number of tiles out of place. Used to estimate the cost of going from the given node to the goal node
@@ -203,68 +300,6 @@ initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
 #initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
 #initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
-rootNode = node(None, initialState, None)
-
-nodeList = deque([rootNode])
-nodeSet = set([rootNode])
-
-print(initialState)
-startTime = time.time()
-maxListLength = 0
-
-while True:
-
-	# pops off the first item 
-	currNode = nodeList.popleft()
-
-	if (currNode.data == goalState):
-		print("Solution Found!")
-
-		endTime = time.time()
-
-		# Walk up the tree to get the solution steps
-
-		solutionList = []
-
-		while (currNode is not None):
-			solutionList.append(currNode)
-			currNode = currNode.parent
-
-		# Reverse the list so the solution is output correctly
-
-		solutionList.reverse()
-
-		# Print the solution
-
-		for solutionNode in solutionList:
-			#print(solutionNode)
-			if solutionNode.action is not None:
-				print(Actions.ActionStr(solutionNode.action))
-
-		print("Total time = {0} Solution length = {1} Max List Length: {2}".format(endTime - startTime, len(solutionList), maxListLength))
-
-		break
-
-	for successorNode in currNode.successor():
-
-		if successorNode not in nodeSet: # check for duplicates
-
-			nodeList.appendleft(successorNode) # depth first. Pushes onto the front
-
-			#nodeList.append(successorNode) # breadth first. Pushes onto the back
-
-			#nodeList.append(successorNode) # greedy best first
-			#nodeList = deque(sorted(list(nodeList), key = h1)) # sort by the h1() function
-			
-			#nodeList.append(successorNode) # A*
-			#nodeList = deque(sorted(list(nodeList), key = f)) # sort by the f() function
-
-			nodeSet.add(successorNode) # Add to the set to check for duplicates
-
-			currListLength = len(nodeList)
-
-			if (currListLength > maxListLength):
-				maxListLength = currListLength
-
-
-	#print(len(nodeSet))
+searchObj = search(initialState)
+searchObj.findSolution()
+searchObj.printSolution()
