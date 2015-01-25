@@ -139,16 +139,14 @@ class boardState:
 		
 
 class node:
-	parent = None
-	children = []
-	data = None
-	depth = 0
-	action = None
 
 	def __init__(self, _parent, _data, _action):
 		self.parent = _parent
 		self.data = _data
 		self.action = _action
+
+		self.children = []
+		self.depth = 0
 
 		if self.parent is not None:
 			self.parent.children.append(self)
@@ -193,12 +191,18 @@ def h1(board1):
 def h1Node(node):
 	return h1(node.data)
 
+def fNode(node):
+	return gNode(node) + h1Node(node)
+
+def gNode(node):
+	return node.depth
+
 #board = boardState(input("Input a numeral list\n"))
 
 
 #initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
-#initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
-initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
+initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
+#initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
 rootNode = node(None, initialState, None)
 
@@ -243,9 +247,12 @@ while True:
 			#nodeList.appendleft(successorNode) # depth first
 			#nodeList.append(successorNode) # breadth first
 
-			nodeList.append(successorNode) # greedy best first
-			nodeList = deque(sorted(list(nodeList), key = h1Node))
+			#nodeList.append(successorNode) # greedy best first
+			#nodeList = deque(sorted(list(nodeList), key = h1Node))
 			
+			nodeList.append(successorNode) # A*
+			nodeList = deque(sorted(list(nodeList), key = fNode))
+
 			nodeSet.add(successorNode)
 
 	#print(len(nodeSet))
