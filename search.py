@@ -282,6 +282,13 @@ class greedyBestSearch(search):
 		self.nodeList.append(nodeToAdd) # greedy best first
 		self.nodeList = deque(sorted(list(self.nodeList), key = h1)) # sort by the h1() function
 
+class AStar(search):
+
+	def addNodeToListPolyMorph(self, nodeToAdd):
+
+		self.nodeList.append(nodeToAdd) # A*
+		self.nodeList = deque(sorted(list(self.nodeList), key = f)) # sort by the f() function
+
 goalState = boardState("1 2 3 8 0 4 7 6 5")
 
 # Heuristic 1. Number of tiles out of place. Used to estimate the cost of going from the given node to the goal node
@@ -306,10 +313,10 @@ def f(node):
 
 #board = boardState(input("Input a numeral list\n"))
 
-initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
-#initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
+#initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
+initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
 #initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
-searchObj = greedyBestSearch(initialState)
+searchObj = AStar(initialState)
 searchObj.findSolution()
 searchObj.printSolution()
