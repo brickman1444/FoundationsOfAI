@@ -199,10 +199,9 @@ def gNode(node):
 
 #board = boardState(input("Input a numeral list\n"))
 
-
 #initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
-initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
-#initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
+#initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
+initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
 rootNode = node(None, initialState, None)
 
@@ -211,6 +210,7 @@ nodeSet = set([rootNode])
 
 print(initialState)
 startTime = time.time()
+maxListLength = 0
 
 while True:
 
@@ -218,9 +218,11 @@ while True:
 	currNode = nodeList.popleft()
 
 	if (currNode.data == goalState):
-		print("solution found")
+		print("Solution Found!")
 
 		endTime = time.time()
+
+		# Walk up the tree to get the solution steps
 
 		solutionList = []
 
@@ -228,31 +230,41 @@ while True:
 			solutionList.append(currNode)
 			currNode = currNode.parent
 
+		# Reverse the list so the solution is output correctly
+
 		solutionList.reverse()
+
+		# Print the solution
 
 		for solutionNode in solutionList:
 			#print(solutionNode)
 			if solutionNode.action is not None:
 				print(Actions.ActionStr(solutionNode.action))
 
-		print("Total time = {0} Solution length = {1}".format(endTime - startTime, len(solutionList)))
+		print("Total time = {0} Solution length = {1} Max List Length: {2}".format(endTime - startTime, len(solutionList), maxListLength))
 
 		break
 
-	successors = currNode.successor()
+	for successorNode in currNode.successor():
 
-	for successorNode in successors:
+		if successorNode not in nodeSet: # check for duplicates
 
-		if successorNode not in nodeSet:
-			#nodeList.appendleft(successorNode) # depth first
-			#nodeList.append(successorNode) # breadth first
+			nodeList.appendleft(successorNode) # depth first. Pushes onto the front
+
+			#nodeList.append(successorNode) # breadth first. Pushes onto the back
 
 			#nodeList.append(successorNode) # greedy best first
-			#nodeList = deque(sorted(list(nodeList), key = h1Node))
+			#nodeList = deque(sorted(list(nodeList), key = h1Node)) # sort by the h1() function
 			
-			nodeList.append(successorNode) # A*
-			nodeList = deque(sorted(list(nodeList), key = fNode))
+			#nodeList.append(successorNode) # A*
+			#nodeList = deque(sorted(list(nodeList), key = fNode)) # sort by the f() function
 
-			nodeSet.add(successorNode)
+			nodeSet.add(successorNode) # Add to the set to check for duplicates
+
+			currListLength = len(nodeList)
+
+			if (currListLength > maxListLength):
+				maxListLength = currListLength
+
 
 	#print(len(nodeSet))
