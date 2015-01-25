@@ -177,31 +177,31 @@ class node:
 
 goalState = boardState("1 2 3 8 0 4 7 6 5")
 
-def h1(board1):
+# Heuristic 1. Number of tiles out of place. Used to estimate the cost of going from the given node to the goal node
+def h1(node):
 
 	diffCount = 0
 
 	for row in range(3):
 		for col in range(3):
-			if (board1.numerals[row][col] != goalState.numerals[row][col]):
+			if (node.data.numerals[row][col] != goalState.numerals[row][col]):
 				diffCount += 1
 
 	return diffCount
 
-def h1Node(node):
-	return h1(node.data)
-
-def fNode(node):
-	return gNode(node) + h1Node(node)
-
-def gNode(node):
+# Cost of going from the initial node to the given node
+def g(node):
 	return node.depth
+
+# Estimated cost to go from the initial node to the goal node through the given node
+def f(node):
+	return g(node) + h1(node)
 
 #board = boardState(input("Input a numeral list\n"))
 
 #initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
-#initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
-initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
+initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
+#initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
 rootNode = node(None, initialState, None)
 
@@ -249,15 +249,15 @@ while True:
 
 		if successorNode not in nodeSet: # check for duplicates
 
-			nodeList.appendleft(successorNode) # depth first. Pushes onto the front
+			#nodeList.appendleft(successorNode) # depth first. Pushes onto the front
 
 			#nodeList.append(successorNode) # breadth first. Pushes onto the back
 
 			#nodeList.append(successorNode) # greedy best first
-			#nodeList = deque(sorted(list(nodeList), key = h1Node)) # sort by the h1() function
+			#nodeList = deque(sorted(list(nodeList), key = h1)) # sort by the h1() function
 			
-			#nodeList.append(successorNode) # A*
-			#nodeList = deque(sorted(list(nodeList), key = fNode)) # sort by the f() function
+			nodeList.append(successorNode) # A*
+			nodeList = deque(sorted(list(nodeList), key = f)) # sort by the f() function
 
 			nodeSet.add(successorNode) # Add to the set to check for duplicates
 
