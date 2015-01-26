@@ -37,9 +37,11 @@ class boardState:
 			#print(index, row, column)
 			self.numerals[row][column] = int(numeralList[index])
 			if (int(numeralList[index]) ==0):
+				# store where the blank is so that we don't have to find it when we call the successor functions
 				self.blankRow = row
 				self.blankColumn = column
-		
+	
+	# Used for printing out a boardState	
 	def __str__(self):
 	
 		numeralList = []
@@ -65,9 +67,12 @@ class boardState:
 					return False
 		return True
 
+	# Used to check for duplicates
 	def __hash__(self):
 		return hash(str(self.numerals))
 		
+	# Successor Functions:
+
 	#Return the state reached by moving the blank down
 	def down(self):
 		downState = copy.deepcopy(self)
@@ -123,20 +128,6 @@ class boardState:
 		rightState.blankColumn += 1
 		
 		return rightState
-
-	def successor(self):
-		list = []
-
-		state = self.up();
-		if (state is not None): list.append(state)
-		state = self.down();
-		if (state is not None): list.append(state)
-		state = self.right();
-		if (state is not None): list.append(state)
-		state = self.left();
-		if (state is not None): list.append(state)
-
-		return list
 		
 
 class node:
@@ -156,6 +147,8 @@ class node:
 	def __str__(self):
 		return "Node:\n" + str(self.data)
 
+	# return a list of nodes with the successor states to data
+	# add housekeeping data to those nodes to track what action it took to get there
 	def successor(self):
 		retList = []
 
@@ -301,20 +294,23 @@ class aStarSearch(search):
 
 	def addNodeToListPolyMorph(self, nodeToAdd):
 
-		self.nodeList.append(nodeToAdd) # A*
-		self.nodeList = deque(sorted(list(self.nodeList), key = f)) # sort by the f() function
+		# push the new node onto the end of the deque
+		self.nodeList.append(nodeToAdd)
+
+		# call f() on every entry in the deque and sort by the results
+		self.nodeList = deque(sorted(list(self.nodeList), key = f))
 
 class depthFirstSearch(search):
 
 	def addNodeToListPolyMorph(self, nodeToAdd):
 
-		self.nodeList.appendleft(nodeToAdd) # depth first.  Pushes onto the front
+		self.nodeList.appendleft(nodeToAdd) # Pushes onto the front
 
 class breadthFirstSearch(search):
 
 	def addNodeToListPolyMorph(self, nodeToAdd):
 
-		self.nodeList.append(nodeToAdd) # breadth first.  Pushes onto the back
+		self.nodeList.append(nodeToAdd) # Pushes onto the back
 
 goalState = boardState("1 2 3 8 0 4 7 6 5")
 
