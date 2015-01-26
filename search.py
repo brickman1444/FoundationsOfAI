@@ -311,12 +311,52 @@ def g(node):
 def f(node):
 	return g(node) + h1(node)
 
-#board = boardState(input("Input a numeral list\n"))
+while(True):
 
-#initialState = boardState("1 3 4 8 6 2 7 0 5") # easy
-initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
-#initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
+	inputNum = int(input("\nWhat would you like to do?\n"
+					+ "\t0: Quit\n"
+					+ "\t1: Run the easy problem\n"
+					+ "\t2: Run the medium problem\n"
+					+ "\t3: Run the hard problem\n"
+					+ "\t4: Input a new problem\n"))
 
-searchObj = aStarSearch(initialState)
-searchObj.findSolution()
-searchObj.printSolution()
+	initialState = None
+
+	if (inputNum == 1):
+		# easy
+		initialState = boardState("1 3 4 8 6 2 7 0 5")
+	elif (inputNum == 2):
+		# medium
+		initialState = boardState("2 8 1 0 4 3 7 6 5")
+	elif (inputNum == 3):
+		# hard
+		initialState = boardState("5 6 7 4 0 8 3 2 1")
+	elif (inputNum == 4):
+		# custom
+		initialState = boardState(input("Input a numeral list (e.g. 1 2 3 4 5 6 7 8 0)\n"))
+	else:
+		print("Invalid input")
+		continue # return to input
+
+	inputNum = int(input("What kind of search would you like to do?\n"
+					+ "\t1: Depth First\n"
+					+ "\t2: Breadth First\n"
+					+ "\t3: Greedy Best First\n"
+					+ "\t4: A*\n"))
+
+	searchObj = None
+
+	if (inputNum == 1):
+		searchObj = depthFirstSearch(initialState)
+	elif (inputNum == 2):
+		searchObj = breadthFirstSearch(initialState)
+	elif (inputNum == 3):
+		searchObj = greedyBestSearch(initialState)
+	elif (inputNum == 4):
+		searchObj = aStarSearch(initialState)
+	else:
+		print("Invalid input")
+		continue # return to input
+
+	searchObj.findSolution()
+	searchObj.printSolution()
