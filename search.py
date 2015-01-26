@@ -208,9 +208,6 @@ class search:
 
 			for successorNode in currNode.successor():
 				self.addNodeToList(successorNode)
-
-			if (len(self.nodeList) % 10 == 0):
-				print(len(self.nodeList))
 				
 		# Control should only flow here if every node has been evaluated and no solution is found
 		self.solutionList = None
