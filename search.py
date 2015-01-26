@@ -214,15 +214,8 @@ class search:
 	def addNodeToList(self, nodeToAdd):
 
 		if nodeToAdd not in self.nodeSet: # check for duplicates
-
-			#nodeList.appendleft(nodeToAdd) # depth first.  Pushes onto the front
-
-			#nodeList.append(nodeToAdd) # breadth first.  Pushes onto the back
-
-			#nodeList.append(nodeToAdd) # greedy best first
-			#nodeList = deque(sorted(list(nodeList), key = h1)) # sort by the h1() function
 		
-			self.addNodeToListPolyMorph(nodeToAdd)
+			self.addNodeToListPolyMorph(nodeToAdd) # "pure virtual" function for each search
 
 			self.nodeSet.add(nodeToAdd) # Add to the set to check for duplicates
 
@@ -230,11 +223,6 @@ class search:
 
 			if (currListLength > self.maxListLength):
 				self.maxListLength = currListLength
-
-	def addNodeToListPolyMorph(self, nodeToAdd):
-		
-		self.nodeList.append(nodeToAdd) # A*
-		self.nodeList = deque(sorted(list(self.nodeList), key = f)) # sort by the f() function
 
 	def saveSolution(self, currNode):
 		print("Solution Found!")
@@ -282,12 +270,24 @@ class greedyBestSearch(search):
 		self.nodeList.append(nodeToAdd) # greedy best first
 		self.nodeList = deque(sorted(list(self.nodeList), key = h1)) # sort by the h1() function
 
-class AStar(search):
+class aStarSearch(search):
 
 	def addNodeToListPolyMorph(self, nodeToAdd):
 
 		self.nodeList.append(nodeToAdd) # A*
 		self.nodeList = deque(sorted(list(self.nodeList), key = f)) # sort by the f() function
+
+class depthFirstSearch(search):
+
+	def addNodeToListPolyMorph(self, nodeToAdd):
+
+		self.nodeList.appendleft(nodeToAdd) # depth first.  Pushes onto the front
+
+class breadthFirstSearch(search):
+
+	def addNodeToListPolyMorph(self, nodeToAdd):
+
+		self.nodeList.append(nodeToAdd) # breadth first.  Pushes onto the back
 
 goalState = boardState("1 2 3 8 0 4 7 6 5")
 
@@ -317,6 +317,6 @@ def f(node):
 initialState = boardState("2 8 1 0 4 3 7 6 5") # medium
 #initialState = boardState("5 6 7 4 0 8 3 2 1") # hard
 
-searchObj = AStar(initialState)
+searchObj = aStarSearch(initialState)
 searchObj.findSolution()
 searchObj.printSolution()
