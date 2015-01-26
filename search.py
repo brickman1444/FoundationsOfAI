@@ -3,6 +3,7 @@ import copy
 from enum import Enum
 from collections import deque
 import time
+import bisect
 
 class Actions(Enum):
 	UP = 1
@@ -207,6 +208,9 @@ class search:
 
 			for successorNode in currNode.successor():
 				self.addNodeToList(successorNode)
+
+			if (len(self.nodeList) % 10 == 0):
+				print(len(self.nodeList))
 				
 		# Control should only flow here if every node has been evaluated and no solution is found
 		self.solutionList = None
@@ -265,10 +269,36 @@ class search:
 
 class greedyBestSearch(search):
 
+	def __init__(self, initialState):
+		self.initialState = initialState
+		self.solutionList = None
+		self.totalTime = 0
+		self.maxListLength = 0
+		self.solutionLength = 0
+		self.nodeList = None
+		self.nodeSet = None
+		self.startTime = 0
+		self.keys = [] # list used to store the results of the heuristic function
+
 	def addNodeToListPolyMorph(self, nodeToAdd):
 
-		self.nodeList.append(nodeToAdd) # greedy best first
-		self.nodeList = deque(sorted(list(self.nodeList), key = h1)) # sort by the h1() function
+		heuristicResult = h1(nodeToAdd)
+
+		# self.keys and self.nodeList are parralel deques. Store the heuristic results in
+		# self.keys and use that to search for the index to insert the next node into
+		insertionIndex = bisect.bisect_left(self.keys, heuristicResult)
+
+		# Convert from deques to lists so the new items can be inserted
+		nodeListList = list(self.nodeList)
+		keysList = list(self.keys)
+
+		# Insert the relevant items into the lists at the same index
+		nodeListList.insert(insertionIndex, nodeToAdd)
+		keysList.insert(insertionIndex, heuristicResult)
+
+		# Convert back to deques
+		self.nodeList = deque(nodeListList)
+		self.keys = deque(keysList)
 
 class aStarSearch(search):
 
