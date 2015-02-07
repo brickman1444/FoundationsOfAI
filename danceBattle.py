@@ -15,16 +15,36 @@ def print2DArray( array ):
 # class for organizing the data about the problem
 class problem:
 
-	def __init__( self, n, m, initialState ):
+	def __init__( self, n, m, inputTurns ):
 		self.n = n
 		self.m = m
-		self.initialState = initialState
+		self.inputTurns = inputTurns
+
+		#Set up array of bools
+		usedTurns = []
+
+		for i in range(0,n):
+			usedTurns.append([ False for x in range(0,n) ])
+
+		for turn in self.inputTurns:
+			markMoveAsDone( usedTurns, turn )
+
+		#print2DArray(usedTurns)
+
+		numInputTurns = len(self.inputTurns)
+
+		isMyTurn = numInputTurns % 2 == 1
+
+		self.lastTurn = inputTurns[numInputTurns - 1]
+
+		self.initialState = danceState(isMyTurn, self.lastTurn, usedTurns)
 
 class danceState:
 
-	def __init__( self, isMyTurn, prevMove, usedTurns ):
+	def __init__( self, isMyTurn, turn, usedTurns ):
 		self.isMyTurn = isMyTurn # Identifying the person who performed the move to get here
-		self.prevMove = prevMove # The last move in the turn used to get to this state
+		self.turn = turn
+		self.prevMove = turn[1] # The last move in the turn used to get to this state
 		self.usedTurns = usedTurns
 
 class node:
@@ -49,11 +69,14 @@ class node:
 
 	def createChildFromMove(self, moveNumber):
 
-		childNode = node( deepcopy(self.data), self )
+		childUsedTurns = deepcopy(self.data.usedTurns)
 
-		childNode.data.isMyTurn = not self.data.isMyTurn
-		childNode.data.prevMove = moveNumber
-		markMoveAsDone( childNode.data.usedTurns, [ self.data.prevMove, moveNumber ] )
+		childTurn = [ self.data.prevMove, moveNumber ]
+
+		markMoveAsDone( childUsedTurns, childTurn )
+
+		childNode = node( danceState( not self.data.isMyTurn, childTurn, childUsedTurns ), self )
+
 		self.children.append( childNode )
 
 		return childNode
@@ -61,6 +84,9 @@ class node:
 	def evaluate(self):
 
 		if len(self.children) == 0: # leaf node
+
+			self.childChosen = None
+
 			if self.data.isMyTurn:
 				return 1 # I win
 			else:
@@ -68,19 +94,19 @@ class node:
 
 		else: # not leaf node
 
-			leafValues = []
-
-			for childNode in self.children:
-				leafValues.append( childNode.evaluate() )
-
 			if not self.data.isMyTurn:
 				# look for max
 
 				maxValue = None
+				self.childChosen = None
 
-				for value in leafValues:
-					if maxValue == None or value > maxValue:
+				for childNode in self.children:
+					value = childNode.evaluate()
+
+					if maxValue is None or value > maxValue:
 						maxValue = value
+						#print("choosing node", childNode.data.turn)
+						self.childChosen = childNode
 
 				return maxValue
 
@@ -88,10 +114,15 @@ class node:
 				# look for min
 
 				minValue = None
+				self.childChosen = None
 
-				for value in leafValues:
-					if minValue == None or value < minValue:
+				for childNode in self.children:
+					value = childNode.evaluate()
+
+					if minValue is None or value < minValue:
 						minValue = value
+						#print("choosing node", childNode.data.turn)
+						self.childChosen = childNode
 
 				return minValue
 
@@ -106,42 +137,23 @@ def readInProblem( fileName ):
 
 	#print("N = {0} M = {1}".format(n,m))
 
-	inputMoves = []
+	inputTurns = []
 
 	for inputLineIndex in range(0, m):
 
 		line = file.readline();
 		line = line.replace('\n','')
 
-		move = line.split(' ')
+		turn = line.split(' ')
 
-		move[0] = int(move[0])
-		move[1] = int(move[1])
+		turn[0] = int(turn[0])
+		turn[1] = int(turn[1])
 
-		inputMoves.append(move)
-
-	#print(inputMoves)
-
-	#Set up array of bools
-	usedTurns = []
-
-	for i in range(0,n):
-		usedTurns.append([ False for x in range(0,n) ])
-
-	for move in inputMoves:
-		markMoveAsDone( usedTurns, move )
-
-	#print2DArray(usedTurns)
-
-	numInputMoves = len(inputMoves)
-
-	isMyTurn = numInputMoves % 2 == 1
-
-	lastMove = inputMoves[numInputMoves - 1][1]
+		inputTurns.append(turn)
 
 	file.close()
 
-	return problem( n, m, danceState(isMyTurn, lastMove, usedTurns) )
+	return problem( n, m, inputTurns )
 
 testCaseNum = input("Enter a test case number:\n")
 
@@ -149,13 +161,36 @@ problemObj = readInProblem("danceTestCase" + testCaseNum + ".txt")
 
 rootNode = node( problemObj.initialState, None )
 
-print("expanding nodes")
+#print("expanding nodes")
 
 rootNode.expand()
 
-print("evaluating nodes")
+#print("evaluating nodes")
 
 evaluation = rootNode.evaluate()
+
+isMax = True
+
+for turn in problemObj.inputTurns:
+	if (isMax):
+		print("Max:",turn)
+	else:
+		print("Min:",turn)
+	isMax = not isMax
+
+tempNode = rootNode
+tempNode = tempNode.childChosen
+
+while tempNode is not None:
+	
+	if (isMax):
+		print("Max:",tempNode.data.turn)
+	else:
+		print("Min:",tempNode.data.turn)
+
+	isMax = not isMax
+
+	tempNode = tempNode.childChosen
 
 if evaluation == 1:
 	print("Win")
