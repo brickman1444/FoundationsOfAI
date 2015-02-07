@@ -1,3 +1,6 @@
+
+from copy import deepcopy
+
 def markMoveAsDone( boolTable, moveList ):
 	i = moveList[0]
 	j = moveList[1]
@@ -23,6 +26,38 @@ class danceState:
 		self.isMyTurn = isMyTurn
 		self.prevMove = prevMove # The last move in the turn used to get to this state
 		self.usedTurns = usedTurns
+
+class node:
+	
+	def __init__(self, data, parent):
+		self.data = data # danceState
+		self.parent = parent
+		self.children = []
+
+	def expand(self):
+
+		#print("trying to expand node")
+
+		for moveNumber in range(0,len(self.data.usedTurns)):
+			if self.data.usedTurns[self.data.prevMove][moveNumber] == False: # move has not been used
+
+				childNode = self.createChildFromMove( moveNumber )
+
+				childNode.expand()
+
+		#print("node expanded")
+
+	def createChildFromMove(self, moveNumber):
+
+		childNode = node( deepcopy(self.data), self )
+
+		childNode.data.isMyTurn = not self.data.isMyTurn
+		childNode.data.prevMove = moveNumber
+		markMoveAsDone( childNode.data.usedTurns, [ self.data.prevMove, moveNumber ] )
+		self.children.append( childNode )
+
+		return childNode
+
 
 def readInProblem( fileName ):
 	file = open( fileName, "r")
@@ -71,6 +106,11 @@ def readInProblem( fileName ):
 
 	return problem( n, m, danceState(isMyTurn, lastMove, usedTurns) )
 
-problemObj = readInProblem("danceTestCase1.txt")
+problemObj = readInProblem("danceTestCase2.txt")
 
-print2DArray(problemObj.initialState.usedTurns)
+rootNode = node( problemObj.initialState, None )
+
+rootNode.expand()
+
+print("rootnode children",len(rootNode.children))
+print("second node children",len(rootNode.children[0].children))
