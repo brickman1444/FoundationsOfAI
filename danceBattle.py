@@ -2,43 +2,66 @@ def markMoveAsDone( boolTable, moveList ):
 	i = moveList[0]
 	j = moveList[1]
 
-	boolTable[i][j] = True
-	boolTable[j][i] = True
+	boolTable[i][j] = 1
+	boolTable[j][i] = 1
 
-file = open("danceTestCase1.txt", "r")
+def print2DArray( array ):
+	for row in array:
+		print(row)
 
-#print(file.read())
+# class for organizing the data about the problem
+class problem:
 
-n = int(file.readline())
-m = int(file.readline())
+	def __init__( self, n, m, isMyTurn, usedMoves ):
+		self.n = n
+		self.m = m
+		self.isMyTurn = isMyTurn
+		self.usedMoves = usedMoves
 
-print("N = {0} M = {1}".format(n,m))
 
-inputMoves = []
+def readInProblem( fileName ):
+	file = open( fileName, "r")
 
-for inputLineIndex in range(0, m):
+	#print(file.read())
 
-	line = file.readline();
-	line = line.replace('\n','')
+	n = int(file.readline())
+	m = int(file.readline())
 
-	move = line.split(' ')
+	print("N = {0} M = {1}".format(n,m))
 
-	move[0] = int(move[0])
-	move[1] = int(move[1])
+	inputMoves = []
 
-	inputMoves.append(move)
+	for inputLineIndex in range(0, m):
 
-print(inputMoves)
+		line = file.readline();
+		line = line.replace('\n','')
 
-#Set up array of bools
-usedMoves = []
+		move = line.split(' ')
 
-emptyRow = [ False for x in range(0,n) ]
+		move[0] = int(move[0])
+		move[1] = int(move[1])
 
-for i in range(0,n):
-	usedMoves.append([ False for x in range(0,n) ])
+		inputMoves.append(move)
 
-for move in inputMoves:
-	markMoveAsDone( usedMoves, move )
+	print(inputMoves)
 
-print(usedMoves)
+	#Set up array of bools
+	usedMoves = []
+
+	for i in range(0,n):
+		usedMoves.append([ 0 for x in range(0,n) ])
+
+	for move in inputMoves:
+		markMoveAsDone( usedMoves, move )
+
+	print2DArray(usedMoves)
+
+	isMyTurn = len(inputMoves) % 2 == 0
+
+	file.close()
+
+	return problem( n, m, isMyTurn, usedMoves)
+
+problemObj = readInProblem("danceTestCase1.txt")
+
+print(problemObj.isMyTurn)
