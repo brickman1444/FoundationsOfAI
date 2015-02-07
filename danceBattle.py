@@ -73,7 +73,7 @@ class node:
 			for childNode in self.children:
 				leafValues.append( childNode.evaluate() )
 
-			if self.data.isMyTurn:
+			if not self.data.isMyTurn:
 				# look for max
 
 				maxValue = None
@@ -90,7 +90,7 @@ class node:
 				minValue = None
 
 				for value in leafValues:
-					if minValue == None or value > minValue:
+					if minValue == None or value < minValue:
 						minValue = value
 
 				return minValue
@@ -143,7 +143,9 @@ def readInProblem( fileName ):
 
 	return problem( n, m, danceState(isMyTurn, lastMove, usedTurns) )
 
-problemObj = readInProblem("danceTestCase3.txt")
+testCaseNum = input("Enter a test case number:\n")
+
+problemObj = readInProblem("danceTestCase" + testCaseNum + ".txt")
 
 rootNode = node( problemObj.initialState, None )
 
@@ -153,4 +155,9 @@ rootNode.expand()
 
 print("evaluating nodes")
 
-print(rootNode.evaluate())
+evaluation = rootNode.evaluate()
+
+if evaluation == 1:
+	print("Win")
+else:
+	print("Lose")
