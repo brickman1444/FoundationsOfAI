@@ -24,7 +24,7 @@ class problem:
 		usedTurns = []
 
 		for i in range(0,n):
-			usedTurns.append([ False for x in range(0,n) ])
+			usedTurns.append([ False for x in range(0,n) ]) # add a row of Falses
 
 		for turn in self.inputTurns:
 			markMoveAsDone( usedTurns, turn )
@@ -135,7 +135,7 @@ def readInProblem( fileName ):
 
 	#print("N = {0} M = {1}".format(n,m))
 
-	inputTurns = []
+	inputTurns = [] # e.g [[0,0],[0,1]]
 
 	for inputLineIndex in range(0, m):
 
