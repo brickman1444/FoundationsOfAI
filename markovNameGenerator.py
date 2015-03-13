@@ -1,5 +1,6 @@
 
 import string
+from random import random
 
 boysFileName = "namesBoys.txt"
 girlsFileName = "namesGirls.txt"
@@ -84,4 +85,34 @@ for char in allCharacters:
 			normalizedData[ char ][ nextChar ] = float(row[ nextChar ]) / float(sum)
 
 #print( frequencyData[ "<"] )
-print( normalizedData["<"] )
+#print( normalizedData["<"] )
+
+initialPrefix = startCharacter
+
+generatedName = initialPrefix
+
+currChar = startCharacter
+nextChar = ""
+
+while( True ):
+
+	randVal = random()
+
+	partialSum = 0
+
+	for char in allCharacters:
+		partialSum += normalizedData[ currChar ][ char ]
+		if ( randVal < partialSum ):
+			nextChar = char
+			break
+
+	if ( nextChar == endCharacter ):
+		break
+
+	generatedName += nextChar
+
+	currChar = nextChar
+
+generatedName = generatedName.replace( initialPrefix, "" )
+
+print( generatedName )
