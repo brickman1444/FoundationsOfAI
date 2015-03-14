@@ -185,6 +185,43 @@ def getRandomCharacter( normalizedData, subslice ):
 	else:
 		return getRandomCharacter( normalizedData[ subslice[ 0 ] ], subslice[ 1 : ] )
 
+def countEmptySpots( dictionary, order ):
+		
+	if ( order == 0 ):
+
+		sum = 0
+
+		for char in allCharacters:
+			if dictionary[ char] == 0:
+				sum += 1
+
+		return sum
+	else:
+		sum = 0
+
+		for char in allCharacters:
+			sum += countEmptySpots( dictionary[ char ], order - 1 )
+
+		return sum
+
+def countAllSpots( dictionary, order ):
+
+	if ( order == 0 ):
+
+		sum = 0
+
+		for char in allCharacters:
+			sum += 1
+
+		return sum
+	else:
+		sum = 0
+
+		for char in allCharacters:
+			sum += countAllSpots( dictionary[ char ], order - 1 )
+
+		return sum
+
 # Begin main code
 
 '''
