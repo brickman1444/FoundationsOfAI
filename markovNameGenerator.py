@@ -24,6 +24,7 @@ def setZeroForAllCharacters( dictionary ):
 # Fills out an empty nested dictionary to the right depth
 # the leaf entries are all set to 0.
 # Used to initialize the frequency data and normalized data
+# Final result looks like dictionary["a"]["a"] ... ["a"] = 0 for all possible letter combinations
 def createEmptyCharacterDictionary( dictionary, order ):
 	
 	if ( order == 0 ):
@@ -58,6 +59,7 @@ def readFileIntoList( fileName, order ):
 
 # Add the start and end characters to the front and back of the name
 # Scales with the order number
+# e.g. order 3 and Zac would output "<<<Zac>>>"
 def addPaddingCharacters( name, order ):
 
 	retName = name
@@ -83,16 +85,13 @@ def getFrequencyData( nameList, order ):
 
 			subslice = name[ subsliceStartingIndex : subsliceStartingIndex + order + 1 ]
 
-			if ( subslice[ 0 ] == endCharacter ):
-				# end of word. Exit early so we don't walk off the end
-				break
-
 			addToFrequencyData( frequencyData, subslice )
 
 	return frequencyData
 
 # Recursively go down the frequency data until the leaf level is reached
 # increment the lowest level and then return all the way back up
+# e.g. a a substring of "acha" would increment dictionary["a"]["c"]["h"]["a"]
 def addToFrequencyData( dictionary, substring ):
 
 	if ( len( substring ) == 1 ):
@@ -117,6 +116,7 @@ def getNormalizedData( frequencyData, order ):
 # of each entry. Store these probabilities in the normalized
 # data.
 def normalizeDataRow( frequencyData, normalizedData, order ):
+
 	if ( order == 0 ):
 		
 		sum = 0
@@ -145,6 +145,7 @@ def generateName( normalizedData, nameList, minLength, maxLength, order ):
 	for i in range( 0, order ):
 		initialPrefix += startCharacter
 
+	# generated name starts with an initial prefix like "<<<"
 	generatedName = initialPrefix
 
 	nextChar = getRandomCharacter( normalizedData, generatedName[ -order : ] )
@@ -237,13 +238,13 @@ while ( True ):
 	if ( order > 0 ):
 		break
 
+NameList = readFileIntoList( fileName, order )
+
+FrequencyData = getFrequencyData( NameList, order )
+
+NormalizedData = getNormalizedData( FrequencyData, order )
+
 while ( True ):
-
-	NameList = readFileIntoList( fileName, order )
-
-	FrequencyData = getFrequencyData( NameList, order )
-
-	NormalizedData = getNormalizedData( FrequencyData, order )
 
 	for index in range( 0, numNames ):
 		print( generateName( NormalizedData, NameList, minLength, maxLength, order ) )
