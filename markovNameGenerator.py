@@ -199,20 +199,17 @@ while ( True ):
 
 '''
 
-fileName = boysFileName
+fileName = girlsFileName
 minLength = 4
 maxLength = 10
 numNames = 10
-order = 2
+order = 3
 
 NameList = readFileIntoList( fileName, order )
 
 FrequencyData = getFrequencyData( NameList, order )
 
 NormalizedData = getNormalizedData( FrequencyData, order )
-
-print( FrequencyData["<"]["<"] )
-print( NormalizedData["<"]["<"] )
 
 for index in range( 0, numNames ):
 	print( generateName( NormalizedData, NameList, minLength, maxLength, order ) )
