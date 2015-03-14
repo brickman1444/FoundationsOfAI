@@ -15,10 +15,27 @@ def addEntryForAllCharacters( dictionary ):
 	for char in allCharacters:
 		dictionary[ char ] = {}
 
+# Set the dictionary entry for all valid characters to 0.
+# Used on the leaf level of the frequency and normalized data dictionaries
 def setZeroForAllCharacters( dictionary ):
 	for char in allCharacters:
 		dictionary[ char ] = 0
 
+# Fills out an empty nested dictionary to the right depth
+# the leaf entries are all set to 0.
+# Used to initialize the frequency data and normalized data
+def createEmptyCharacterDictionary( dictionary, order ):
+	
+	if ( order == 0 ):
+		setZeroForAllCharacters( dictionary )
+	else:
+		addEntryForAllCharacters( dictionary )
+
+		for char in allCharacters:
+			createEmptyCharacterDictionary( dictionary[ char ], order - 1 )
+
+# parse through an input file and return a list of all the names
+# adds the padding characters to the ends of each name in the list
 def readFileIntoList( fileName, order ):
 
 	nameList = []
@@ -39,6 +56,8 @@ def readFileIntoList( fileName, order ):
 
 	return nameList
 
+# Add the start and end characters to the front and back of the name
+# Scales with the order number
 def addPaddingCharacters( name, order ):
 
 	retName = name
@@ -48,6 +67,9 @@ def addPaddingCharacters( name, order ):
 
 	return retName
 
+# Takes a list of names and calculates the frequency data of how often
+# given characters follow other characters. Returns a nested dictionary
+# of the data
 def getFrequencyData( nameList, order ):
 
 	frequencyData = {}
@@ -55,7 +77,6 @@ def getFrequencyData( nameList, order ):
 	createEmptyCharacterDictionary( frequencyData, order )
 
 	subslice = ""
-	walkingIndex = 0
 
 	for name in nameList:
 		for subsliceStartingIndex in range( 0, len( name ) - order ):
@@ -70,16 +91,8 @@ def getFrequencyData( nameList, order ):
 
 	return frequencyData
 
-def createEmptyCharacterDictionary( dictionary, order ):
-	
-	if ( order == 0 ):
-		setZeroForAllCharacters( dictionary )
-	else:
-		addEntryForAllCharacters( dictionary )
-
-		for char in allCharacters:
-			createEmptyCharacterDictionary( dictionary[ char ], order - 1 )
-
+# Recursively go down the frequency data until the leaf level is reached
+# increment the lowest level and then return all the way back up
 def addToFrequencyData( dictionary, substring ):
 
 	if ( len( substring ) == 1 ):
@@ -87,6 +100,8 @@ def addToFrequencyData( dictionary, substring ):
 	else:
 		addToFrequencyData( dictionary[ substring[ 0 ] ], substring[1:] )
 
+# Takes the frequency data and turns it into a probability table
+# Makes the leaf layer rows stochastic. 
 def getNormalizedData( frequencyData, order ):
 
 	normalizedData = {}
@@ -97,6 +112,10 @@ def getNormalizedData( frequencyData, order ):
 
 	return normalizedData
 
+# recursively go down the normalized data dictionary
+# sum up the frequencies and calculate the probabilities
+# of each entry. Store these probabilities in the normalized
+# data.
 def normalizeDataRow( frequencyData, normalizedData, order ):
 	if ( order == 0 ):
 		
@@ -116,6 +135,9 @@ def normalizeDataRow( frequencyData, normalizedData, order ):
 		for char in allCharacters:
 			normalizeDataRow( frequencyData[ char ], normalizedData[ char ], order - 1 )
 
+# Generate a name given the parameters. Limits the name to
+# within the min and max length and only allows unique names
+# that aren't on the original name list
 def generateName( normalizedData, nameList, minLength, maxLength, order ):
 
 	initialPrefix = ""
@@ -142,6 +164,8 @@ def generateName( normalizedData, nameList, minLength, maxLength, order ):
 	else:
 		return generatedName
 
+# Recursively go down the normalized data to the leaf layer 
+# to pick what letter should go next.
 def getRandomCharacter( normalizedData, subslice ):
 
 	if ( len( subslice ) == 1 ):
@@ -157,19 +181,19 @@ def getRandomCharacter( normalizedData, subslice ):
 			if ( randVal < partialSum ):
 				return char
 
-		print( "what's going on " + str( randVal ) + " " + str( partialSum ) )
-
 	else:
 		return getRandomCharacter( normalizedData[ subslice[ 0 ] ], subslice[ 1 : ] )
 
+# Begin main code
+
 '''
+# Non-UI input
 fileName = girlsFileName
 minLength = 4
 maxLength = 10
 numNames = 10
 order = 3
 '''
-
 
 fileName = ""
 while ( True ):
