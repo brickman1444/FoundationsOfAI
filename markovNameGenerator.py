@@ -41,7 +41,7 @@ def getFrequencyData( nameList, order ):
 
 	frequencyData = {}
 
-	createFrequencyDictionary( frequencyData, order )
+	createEmptyCharacterDictionary( frequencyData, order )
 
 	subslice = ""
 	walkingIndex = 0
@@ -59,7 +59,7 @@ def getFrequencyData( nameList, order ):
 
 	return frequencyData
 
-def createFrequencyDictionary( dictionary, order ):
+def createEmptyCharacterDictionary( dictionary, order ):
 	
 	if ( order == 0 ):
 		setZeroForAllCharacters( dictionary )
@@ -67,7 +67,7 @@ def createFrequencyDictionary( dictionary, order ):
 		addEntryForAllCharacters( dictionary )
 
 		for char in allCharacters:
-			createFrequencyDictionary( dictionary[ char ], order - 1 )
+			createEmptyCharacterDictionary( dictionary[ char ], order - 1 )
 
 def addToFrequencyData( dictionary, substring ):
 
@@ -76,32 +76,34 @@ def addToFrequencyData( dictionary, substring ):
 	else:
 		addToFrequencyData( dictionary[ substring[ 0 ] ], substring[1:] )
 
-def getNormalizedData( frequencyData ):
+def getNormalizedData( frequencyData, order ):
+
 	normalizedData = {}
 
-	# set up normalized data
-	addEntryForAllCharacters( normalizedData )
+	createEmptyCharacterDictionary( normalizedData, order )
 
-	for char in allCharacters:
-		setZeroForAllCharacters( normalizedData[ char ] )
-
-	for char in allCharacters:
-
-		row = frequencyData[ char ]
-
-		sum = 0
-
-		for nextChar in allCharacters:
-			sum += row[ nextChar ]
-	
-		#print( char + " " + str( sum ) )
-
-		if ( not sum == 0 ):
-			for nextChar in allCharacters:
-
-				normalizedData[ char ][ nextChar ] = float(row[ nextChar ]) / float(sum)
+	normalizeDataRow( frequencyData, normalizedData, order )
 
 	return normalizedData
+
+def normalizeDataRow( frequencyData, normalizedData, order ):
+	if ( order == 0 ):
+		
+		sum = 0
+
+		for char in allCharacters:
+			sum += frequencyData[ char ]
+
+		if ( sum == 0 ):
+			# avoid division by zero error
+			return
+
+		for char in allCharacters:
+			normalizedData[ char ] = float( frequencyData[ char ] ) / float( sum )
+
+	else:
+		for char in allCharacters:
+			normalizeDataRow( frequencyData[ char ], normalizedData[ char ], order - 1 )
 
 def generateName( normalizedData, nameList, minLength, maxLength, order ):
 
@@ -189,13 +191,15 @@ fileName = boysFileName
 minLength = 4
 maxLength = 10
 numNames = 10
-order = 1
+order = 2
 
 NameList = readFileIntoList( fileName )
 
 FrequencyData = getFrequencyData( NameList, order )
 
-NormalizedData = getNormalizedData( FrequencyData )
+NormalizedData = getNormalizedData( FrequencyData, order )
+
+print( NormalizedData["e"]["r"] )
 
 for index in range( 0, numNames ):
 	print( generateName( NormalizedData, NameList, minLength, maxLength, order ) )
