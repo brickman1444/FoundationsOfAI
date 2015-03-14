@@ -163,6 +163,14 @@ def getRandomCharacter( normalizedData, subslice ):
 		return getRandomCharacter( normalizedData[ subslice[ 0 ] ], subslice[ 1 : ] )
 
 '''
+fileName = girlsFileName
+minLength = 4
+maxLength = 10
+numNames = 10
+order = 3
+'''
+
+
 fileName = ""
 while ( True ):
 	genderChoice = input( "Male (m) or female (f)?" )
@@ -197,20 +205,27 @@ while ( True ):
 	if ( numNames > 0 ):
 		break
 
-'''
+order = 0
 
-fileName = girlsFileName
-minLength = 4
-maxLength = 10
-numNames = 10
-order = 3
+while ( True ):
+	order = int( input( "Order?" ) )
 
-NameList = readFileIntoList( fileName, order )
+	if ( order > 0 ):
+		break
 
-FrequencyData = getFrequencyData( NameList, order )
+while ( True ):
 
-NormalizedData = getNormalizedData( FrequencyData, order )
+	NameList = readFileIntoList( fileName, order )
 
-for index in range( 0, numNames ):
-	print( generateName( NormalizedData, NameList, minLength, maxLength, order ) )
+	FrequencyData = getFrequencyData( NameList, order )
+
+	NormalizedData = getNormalizedData( FrequencyData, order )
+
+	for index in range( 0, numNames ):
+		print( generateName( NormalizedData, NameList, minLength, maxLength, order ) )
+
+	rerun = input( "Run again? (y/n)" )
+
+	if ( rerun != "y" ):
+		break
 
