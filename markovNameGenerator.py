@@ -129,11 +129,54 @@ def generateName( normalizedData, nameList, minLength, maxLength ):
 	else:
 		return generatedName
 
-NameList = readFileIntoList( boysFileName )
+
+'''
+fileName = ""
+while ( True ):
+	genderChoice = input( "Male (m) or female (f)?" )
+	if ( genderChoice == "m" ):
+		fileName = boysFileName
+		break
+	elif ( genderChoice == "f" ):
+		fileName = girlsFileName
+		break
+
+minLength = 0
+
+while ( True ):
+	minLength = int( input( "Minimum name length?" ) )
+
+	if ( minLength > 0 ):
+		break
+
+maxLength = 0
+
+while ( True ):
+	maxLength = int( input( "Maximum name length?" ) )
+
+	if ( maxLength >= minLength ):
+		break
+
+numNames = 0
+
+while ( True ):
+	numNames = int( input( "Number of names?" ) )
+
+	if ( numNames > 0 ):
+		break
+
+'''
+
+fileName = boysFileName
+minLength = 4
+maxLength = 10
+numNames = 10
+
+NameList = readFileIntoList( fileName )
 
 FrequencyData = getFrequencyData( NameList )
 
 NormalizedData = getNormalizedData( FrequencyData )
 
-for index in range( 0, 20 ):
-	print( generateName( NormalizedData, NameList, 3, 15 ) )
+for index in range( 0, numNames ):
+	print( generateName( NormalizedData, NameList, minLength, maxLength ) )
