@@ -88,7 +88,7 @@ def getNormalizedData( frequencyData ):
 
 	return normalizedData
 
-def generateName( normalizedData, minLength, maxLength ):
+def generateName( normalizedData, nameList, minLength, maxLength ):
 
 	initialPrefix = startCharacter
 
@@ -122,10 +122,10 @@ def generateName( normalizedData, minLength, maxLength ):
 
 	nameLength = len( generatedName )
 
-	if ( nameLength < minLength or nameLength > maxLength ):
+	if ( nameLength < minLength or nameLength > maxLength or generatedName in nameList):
 
 		# Outside of range. Regenerate.
-		return generateName( normalizedData, minLength, maxLength )
+		return generateName( normalizedData, nameList, minLength, maxLength )
 	else:
 		return generatedName
 
@@ -135,5 +135,5 @@ FrequencyData = getFrequencyData( NameList )
 
 NormalizedData = getNormalizedData( FrequencyData )
 
-for index in range( 0, 4):
-	print( generateName( NormalizedData, 3, 15 ) )
+for index in range( 0, 20 ):
+	print( generateName( NormalizedData, NameList, 3, 15 ) )
