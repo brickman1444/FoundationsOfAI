@@ -10,10 +10,6 @@ endCharacter = '>'
 
 allCharacters = startCharacter + string.ascii_lowercase + endCharacter
 
-file = open( boysFileName, "r")
-
-nameList = []
-
 # add an entry to a dictionary for all valid characters
 def addEntryForAllCharacters( dictionary ):
 	for char in allCharacters:
@@ -23,96 +19,121 @@ def setZeroForAllCharacters( dictionary ):
 	for char in allCharacters:
 		dictionary[ char ] = 0
 
-for line in file:
+def readFileIntoList( fileName ):
 
-	line = line.replace("\n","")
+	nameList = []
 
-	line = ( startCharacter + line + endCharacter ).lower()
+	file = open( fileName, "r" )
 
-	nameList.append( line )
+	for line in file:
 
-file.close()
+		line = line.replace("\n","")
 
-frequencyData = {}
+		line = ( startCharacter + line + endCharacter ).lower()
 
-# set up frequency data dictionary
-addEntryForAllCharacters( frequencyData )
+		nameList.append( line )
 
-for char in allCharacters:
-	setZeroForAllCharacters( frequencyData[ char ] )
+	file.close()
 
-for name in nameList:
-	for charIndex in range( 0, len( name ) - 1 ):
+	return nameList
 
-		char = name[ charIndex ]
+def getFrequencyData( nameList ):
 
-		nextChar = name[ charIndex + 1 ]
+	frequencyData = {}
 
-		if ( not char == endCharacter ):
+	# set up frequency data dictionary
+	addEntryForAllCharacters( frequencyData )
 
-			# add 1 to the frequency table
+	for char in allCharacters:
+		setZeroForAllCharacters( frequencyData[ char ] )
+
+	for name in nameList:
+		for charIndex in range( 0, len( name ) - 1 ):
+
+			char = name[ charIndex ]
+
+			if ( char == endCharacter ):
+				break
+
+			nextChar = name[ charIndex + 1 ]
 
 			frequencyData[ char ][ nextChar ] += 1
 
-#print( frequencyData )
+	return frequencyData
 
-# normalize data
+def getNormalizedData( frequencyData ):
+	normalizedData = {}
 
-normalizedData = {}
-
-# set up normalized data
-addEntryForAllCharacters( normalizedData )
-
-for char in allCharacters:
-	setZeroForAllCharacters( normalizedData[ char ] )
-
-for char in allCharacters:
-
-	row = frequencyData[ char ]
-
-	sum = 0
-
-	for nextChar in allCharacters:
-		sum += row[ nextChar ]
-	
-	#print( char + " " + str( sum ) )
-
-	if ( not sum == 0 ):
-		for nextChar in allCharacters:
-
-			#print( str( row[ nextChar ] ) + " / " + str( sum ) + " = " + str( row[ nextChar ] / sum ) )
-
-			normalizedData[ char ][ nextChar ] = float(row[ nextChar ]) / float(sum)
-
-#print( frequencyData[ "<"] )
-#print( normalizedData["<"] )
-
-initialPrefix = startCharacter
-
-generatedName = initialPrefix
-
-currChar = startCharacter
-nextChar = ""
-
-while( True ):
-
-	randVal = random()
-
-	partialSum = 0
+	# set up normalized data
+	addEntryForAllCharacters( normalizedData )
 
 	for char in allCharacters:
-		partialSum += normalizedData[ currChar ][ char ]
-		if ( randVal < partialSum ):
-			nextChar = char
+		setZeroForAllCharacters( normalizedData[ char ] )
+
+	for char in allCharacters:
+
+		row = frequencyData[ char ]
+
+		sum = 0
+
+		for nextChar in allCharacters:
+			sum += row[ nextChar ]
+	
+		#print( char + " " + str( sum ) )
+
+		if ( not sum == 0 ):
+			for nextChar in allCharacters:
+
+				normalizedData[ char ][ nextChar ] = float(row[ nextChar ]) / float(sum)
+
+	return normalizedData
+
+def generateName( normalizedData, minLength, maxLength ):
+
+	initialPrefix = startCharacter
+
+	generatedName = initialPrefix
+
+	currChar = startCharacter
+	nextChar = ""
+
+	while( True ):
+
+		randVal = random()
+
+		partialSum = 0
+
+		for char in allCharacters:
+
+			partialSum += normalizedData[ currChar ][ char ]
+
+			if ( randVal < partialSum ):
+				nextChar = char
+				break
+
+		if ( nextChar == endCharacter ):
 			break
 
-	if ( nextChar == endCharacter ):
-		break
+		generatedName += nextChar
 
-	generatedName += nextChar
+		currChar = nextChar
 
-	currChar = nextChar
+	generatedName = generatedName.replace( initialPrefix, "" )
 
-generatedName = generatedName.replace( initialPrefix, "" )
+	nameLength = len( generatedName )
 
-print( generatedName )
+	if ( nameLength < minLength or nameLength > maxLength ):
+
+		# Outside of range. Regenerate.
+		return generateName( normalizedData, minLength, maxLength )
+	else:
+		return generatedName
+
+NameList = readFileIntoList( boysFileName )
+
+FrequencyData = getFrequencyData( NameList )
+
+NormalizedData = getNormalizedData( FrequencyData )
+
+for index in range( 0, 4):
+	print( generateName( NormalizedData, 3, 15 ) )
