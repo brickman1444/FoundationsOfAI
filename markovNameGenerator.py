@@ -88,9 +88,12 @@ def getNormalizedData( frequencyData ):
 
 	return normalizedData
 
-def generateName( normalizedData, nameList, minLength, maxLength ):
+def generateName( normalizedData, nameList, minLength, maxLength, order ):
 
-	initialPrefix = startCharacter
+	initialPrefix = ""
+
+	for i in range( 0, order ):
+		initialPrefix += startCharacter
 
 	generatedName = initialPrefix
 
@@ -125,7 +128,7 @@ def generateName( normalizedData, nameList, minLength, maxLength ):
 	if ( nameLength < minLength or nameLength > maxLength or generatedName in nameList):
 
 		# Outside of range. Regenerate.
-		return generateName( normalizedData, nameList, minLength, maxLength )
+		return generateName( normalizedData, nameList, minLength, maxLength, order )
 	else:
 		return generatedName
 
@@ -171,6 +174,7 @@ fileName = boysFileName
 minLength = 4
 maxLength = 10
 numNames = 10
+order = 1
 
 NameList = readFileIntoList( fileName )
 
@@ -179,4 +183,4 @@ FrequencyData = getFrequencyData( NameList )
 NormalizedData = getNormalizedData( FrequencyData )
 
 for index in range( 0, numNames ):
-	print( generateName( NormalizedData, NameList, minLength, maxLength ) )
+	print( generateName( NormalizedData, NameList, minLength, maxLength, order ) )
