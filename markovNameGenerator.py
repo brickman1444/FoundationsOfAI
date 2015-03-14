@@ -37,29 +37,44 @@ def readFileIntoList( fileName ):
 
 	return nameList
 
-def getFrequencyData( nameList ):
+def getFrequencyData( nameList, order ):
 
 	frequencyData = {}
 
-	# set up frequency data dictionary
-	addEntryForAllCharacters( frequencyData )
+	createFrequencyDictionary( frequencyData, order )
 
-	for char in allCharacters:
-		setZeroForAllCharacters( frequencyData[ char ] )
+	subslice = ""
+	walkingIndex = 0
 
 	for name in nameList:
-		for charIndex in range( 0, len( name ) - 1 ):
+		for subsliceStartingIndex in range( 0, len( name ) - order ):
 
-			char = name[ charIndex ]
+			subslice = name[ subsliceStartingIndex : subsliceStartingIndex + order + 1 ]
 
-			if ( char == endCharacter ):
+			if ( subslice[ 0 ] == endCharacter ):
+				# end of word. Exit early so we don't walk off the end
 				break
 
-			nextChar = name[ charIndex + 1 ]
-
-			frequencyData[ char ][ nextChar ] += 1
+			addToFrequencyData( frequencyData, subslice )
 
 	return frequencyData
+
+def createFrequencyDictionary( dictionary, order ):
+	
+	if ( order == 0 ):
+		setZeroForAllCharacters( dictionary )
+	else:
+		addEntryForAllCharacters( dictionary )
+
+		for char in allCharacters:
+			createFrequencyDictionary( dictionary[ char ], order - 1 )
+
+def addToFrequencyData( dictionary, substring ):
+
+	if ( len( substring ) == 1 ):
+		dictionary[ substring ] += 1
+	else:
+		addToFrequencyData( dictionary[ substring[ 0 ] ], substring[1:] )
 
 def getNormalizedData( frequencyData ):
 	normalizedData = {}
@@ -178,9 +193,10 @@ order = 1
 
 NameList = readFileIntoList( fileName )
 
-FrequencyData = getFrequencyData( NameList )
+FrequencyData = getFrequencyData( NameList, order )
 
 NormalizedData = getNormalizedData( FrequencyData )
 
 for index in range( 0, numNames ):
 	print( generateName( NormalizedData, NameList, minLength, maxLength, order ) )
+
