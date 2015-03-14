@@ -19,7 +19,7 @@ def setZeroForAllCharacters( dictionary ):
 	for char in allCharacters:
 		dictionary[ char ] = 0
 
-def readFileIntoList( fileName ):
+def readFileIntoList( fileName, order ):
 
 	nameList = []
 
@@ -29,13 +29,24 @@ def readFileIntoList( fileName ):
 
 		line = line.replace("\n","")
 
-		line = ( startCharacter + line + endCharacter ).lower()
+		line = addPaddingCharacters( line, order )
+
+		line = line.lower()
 
 		nameList.append( line )
 
 	file.close()
 
 	return nameList
+
+def addPaddingCharacters( name, order ):
+
+	retName = name
+
+	for i in range( 0, order ):
+		retName = startCharacter + retName + endCharacter
+
+	return retName
 
 def getFrequencyData( nameList, order ):
 
@@ -114,10 +125,26 @@ def generateName( normalizedData, nameList, minLength, maxLength, order ):
 
 	generatedName = initialPrefix
 
-	currChar = startCharacter
-	nextChar = ""
+	nextChar = getRandomCharacter( normalizedData, generatedName[ -order : ] )
 
-	while( True ):
+	while ( not nextChar == endCharacter ):
+		generatedName += nextChar
+		nextChar = getRandomCharacter( normalizedData, generatedName[ -order : ] )
+
+	generatedName = generatedName.replace( initialPrefix, "" )
+
+	nameLength = len( generatedName )
+
+	if ( nameLength < minLength or nameLength > maxLength or addPaddingCharacters( generatedName, order ) in nameList):
+
+		# Outside of range. Regenerate.
+		return generateName( normalizedData, nameList, minLength, maxLength, order )
+	else:
+		return generatedName
+
+def getRandomCharacter( normalizedData, subslice ):
+
+	if ( len( subslice ) == 1 ):
 
 		randVal = random()
 
@@ -125,30 +152,15 @@ def generateName( normalizedData, nameList, minLength, maxLength, order ):
 
 		for char in allCharacters:
 
-			partialSum += normalizedData[ currChar ][ char ]
+			partialSum += normalizedData[ subslice ][ char ]
 
 			if ( randVal < partialSum ):
-				nextChar = char
-				break
+				return char
 
-		if ( nextChar == endCharacter ):
-			break
+		print( "what's going on " + str( randVal ) + " " + str( partialSum ) )
 
-		generatedName += nextChar
-
-		currChar = nextChar
-
-	generatedName = generatedName.replace( initialPrefix, "" )
-
-	nameLength = len( generatedName )
-
-	if ( nameLength < minLength or nameLength > maxLength or generatedName in nameList):
-
-		# Outside of range. Regenerate.
-		return generateName( normalizedData, nameList, minLength, maxLength, order )
 	else:
-		return generatedName
-
+		return getRandomCharacter( normalizedData[ subslice[ 0 ] ], subslice[ 1 : ] )
 
 '''
 fileName = ""
@@ -193,13 +205,14 @@ maxLength = 10
 numNames = 10
 order = 2
 
-NameList = readFileIntoList( fileName )
+NameList = readFileIntoList( fileName, order )
 
 FrequencyData = getFrequencyData( NameList, order )
 
 NormalizedData = getNormalizedData( FrequencyData, order )
 
-print( NormalizedData["e"]["r"] )
+print( FrequencyData["<"]["<"] )
+print( NormalizedData["<"]["<"] )
 
 for index in range( 0, numNames ):
 	print( generateName( NormalizedData, NameList, minLength, maxLength, order ) )
